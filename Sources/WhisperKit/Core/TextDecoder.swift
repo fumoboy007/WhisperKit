@@ -210,7 +210,10 @@ public extension TextDecoding {
 
             // Add prefix tokens
             if let prefixTokens = options.prefixTokens {
-                let trimmedPrefixTokens = Array(prefixTokens.suffix(Constants.maxTokenContext / 2)).filter { $0 < tokenizer.specialTokens.specialTokenBegin }
+                let trimmedPrefixTokens = Array(prefixTokens.suffix(Constants.maxTokenContext / 2)).filter { token in
+                    token < tokenizer.specialTokens.specialTokenBegin ||
+                    tokenizer.specialTokens.timeTokensRange.contains(token)
+                }
                 prefillTokens.append(contentsOf: trimmedPrefixTokens)
             }
         }

@@ -257,6 +257,8 @@ public enum ChunkingStrategy: String, CaseIterable {
 ///   - clipTimestamps: Array of timestamps (in seconds) to split the audio into segments for transcription.
 ///   - promptTokens: Array of token IDs to use as the conditioning prompt for the decoder. These are prepended to the prefill tokens.
 ///   - prefixTokens: Array of token IDs to use as the initial prefix for the decoder. These are appended to the prefill tokens.
+///                  Note that the `<|0.00|>` token is currently implicitly prepended to the prefix tokens to force the first token
+///                  timestamp to start at 0.
 ///   - suppressBlank: If true, blank tokens will be suppressed during decoding.
 ///   - supressTokens: List of token IDs to suppress during decoding.
 ///   - compressionRatioThreshold: If the compression ratio of the transcription text is above this value, it is too repetitive and treated as failed.
@@ -1090,6 +1092,15 @@ public struct SpecialTokens {
         self.transcribeToken = transcribeToken
         self.translateToken = translateToken
         self.whitespaceToken = whitespaceToken
+    }
+
+    public var timeTokenEnd: Int {
+        // 30 sec / 0.02 sec = 1500
+        return timeTokenBegin + 1500
+    }
+
+    public var timeTokensRange: ClosedRange<Int> {
+        return timeTokenBegin...timeTokenEnd
     }
 }
 
